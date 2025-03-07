@@ -1,0 +1,19 @@
+replicaCount: 2
+
+image:
+  repository: nginx
+  pullPolicy: IfNotPresent
+  tag: "minik8s"
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  host: "minik8s.local"
+
+podSecurityContext: {}
+
+securityContext:
+  readOnlyRootFilesystem: false
+  runAsNonRoot: true

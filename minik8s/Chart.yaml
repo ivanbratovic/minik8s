@@ -1,0 +1,6 @@
+apiVersion: v2
+name: minik8s-nginx
+description: A Helm chart for Ivan's MiniK8s
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
