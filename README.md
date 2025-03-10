@@ -1,5 +1,7 @@
 # MiniK8s
 
+Small, sample K8s deployment of an nginx image on Minikube with Helm.
+
 ## Requirements
 
 - Minikube
