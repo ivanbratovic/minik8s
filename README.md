@@ -2,6 +2,10 @@
 
 Small, sample K8s deployment of an nginx image on Minikube with Helm.
 
+This is just a POC, but hypothetically you could deploy something useful with it by modifying the ConfigMap object
+that's used to deploy the files, in `minik8s/templates/configmap.yaml`. It's currently used to mount files
+from the `minik8s/html/` directory into the nginx container to serve them.
+
 ## Requirements
 
 - Minikube
