@@ -1,0 +1,21 @@
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+*~
+.project
+*.tmproj
+
+# Logs
+*.log
+
+# Helm packaging
+*.tgz
+
+# Kubernetes
+kubeconfig
+*.kubeconfig

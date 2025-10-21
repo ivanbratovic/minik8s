@@ -1,0 +1,36 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named {{ .Release.Name }} and is deployed in the {{ .Release.Namespace }} namespace.
+
+To access your application:
+
+1. Check the status of your pods:
+   kubectl -n {{ .Release.Namespace }} get pods
+
+2. Wait for all pods to be in the "Running" state:
+   kubectl -n {{ .Release.Namespace }} wait --for=condition=Ready pod -l app={{ .Chart.Name }} --timeout=60s
+
+{{- if eq .Values.ingress.host "minik8s.local" }}
+
+3. Make sure you have added the following entry to your hosts file:
+   - For Docker Desktop: 127.0.0.1 {{ .Values.ingress.host }}
+   - For standard Minikube: <minikube-ip> {{ .Values.ingress.host }}
+     (Get your Minikube IP with: minikube ip)
+
+{{- end }}
+
+{{- if .Values.ingress.host }}
+
+4. If using Docker Desktop, start the Minikube tunnel in a separate terminal:
+   minikube tunnel
+
+5. Access your application:
+   - Browser: http://{{ .Values.ingress.host }}/
+   - curl: curl http://{{ .Values.ingress.host }}/
+
+{{- end }}
+
+To customize the content served by nginx, edit the files in the html/ directory
+and run: helm upgrade {{ .Release.Name }} ./minik8s/ -n {{ .Release.Namespace }}
+
+For more information, visit: https://github.com/ivanbratovic/minik8s

@@ -1,11 +1,12 @@
 IMAGE_NAME=nginx:minik8s
 NAMESPACE=minik8s
+CHART_PATH=./minik8s/
 
-.PHONY: all deploy build test load-image init helm tunnel clean
+.PHONY: all deploy build test load-image init lint helm tunnel clean
 
 all: init deploy
 
-deploy: build load-image helm
+deploy: build load-image lint helm
 
 # Build local Docker image
 build:
@@ -28,9 +29,13 @@ init:
 	minikube addons enable ingress
 	kubectl --context=minikube cluster-info
 
+# Lint and validate the Helm chart
+lint:
+	helm lint $(CHART_PATH)
+
 # Deploy the project with Helm
 helm:
-	helm upgrade --install --namespace $(NAMESPACE) --create-namespace minik8s-release ./minik8s/
+	helm upgrade --install --namespace $(NAMESPACE) --create-namespace minik8s-release $(CHART_PATH)
 
 # Run the minikube tunnel command
 tunnel:

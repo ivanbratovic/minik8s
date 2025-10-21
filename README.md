@@ -6,6 +6,23 @@ This is just a POC, but hypothetically you could deploy something useful with it
 that's used to deploy the files, in `minik8s/templates/configmap.yaml`. It's currently used to mount files
 from the `minik8s/html/` directory into the nginx container to serve them.
 
+## How It Works: Dual index.html Pattern
+
+This project uses two `index.html` files with different purposes:
+
+1. **`/index.html`** (root directory) - Baked into the Docker image as a fallback
+   - Shows an error message if ConfigMap mounting fails
+   - Built into the container during `docker build`
+   - Located at `/usr/share/nginx/html/index.html` in the container
+
+2. **`/minik8s/html/index.html`** - Deployed via Kubernetes ConfigMap
+   - The actual content served when deployment is successful
+   - Mounted over the fallback file via ConfigMap volume mount
+   - Easy to update without rebuilding the Docker image
+
+To customize the served content, edit files in `minik8s/html/` and redeploy with Helm. The ConfigMap
+will automatically update, and pods will restart due to the checksum annotation in the deployment.
+
 ## Requirements
 
 - Minikube
