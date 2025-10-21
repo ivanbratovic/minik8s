@@ -23,6 +23,71 @@ This project uses two `index.html` files with different purposes:
 To customize the served content, edit files in `minik8s/html/` and redeploy with Helm. The ConfigMap
 will automatically update, and pods will restart due to the checksum annotation in the deployment.
 
+## Architecture
+
+```
+┌────────────────────────────────────────────────────────────────────┐
+│ Development Machine                                                │
+│                                                                    │
+│  ┌──────────────┐                                                  │
+│  │ Dockerfile   │──► docker build ──► nginx:minik8s image          │
+│  │ index.html   │                           │                      │
+│  │ entrypoint.sh│                           │                      │
+│  └──────────────┘                           ▼                      │
+│                                    minikube image load             │
+│                                             │                      │
+│  ┌──────────────┐                           │                      │
+│  │ Helm Chart   │                           │                      │
+│  │ - templates/ │──► helm upgrade ──────────┼─────────────────┐    │
+│  │ - values.yaml│                           │                 │    │
+│  │ - html/      │                           │                 │    │
+│  └──────────────┘                           │                 │    │
+│                                    ┌────────▼─────────────────▼──┐ │
+│                                    │ Minikube (Kubernetes)       │ │
+│                                    │                             │ │
+│                                    │  ┌────────────────────┐     │ │
+│  Browser ────────────────────────────►│ Ingress (nginx)    │     │ │
+│  http://minik8s.local/             │  └────────┬───────────┘     │ │
+│                                    │           │                 │ │
+│                                    │  ┌────────▼───────────┐     │ │
+│                                    │  │ Service (ClusterIP)│     │ │
+│                                    │  │ Port: 8080 → 80    │     │ │
+│                                    │  └────────┬───────────┘     │ │
+│                                    │           │                 │ │
+│                                    │  ┌────────▼───────────┐     │ │
+│                                    │  │ Deployment         │     │ │
+│                                    │  │ (2 replicas)       │     │ │
+│                                    │  │                    │     │ │
+│                                    │  │  ┌──────────────┐  │     │ │
+│                                    │  │  │ Pod 1        │  │     │ │
+│                                    │  │  │ nginx:minik8s│  │     │ │
+│                                    │  │  │ + ConfigMap  │  │     │ │
+│                                    │  │  └──────────────┘  │     │ │
+│                                    │  │  ┌──────────────┐  │     │ │
+│                                    │  │  │ Pod 2        │  │     │ │
+│                                    │  │  │ nginx:minik8s│  │     │ │
+│                                    │  │  │ + ConfigMap  │  │     │ │
+│                                    │  │  └──────────────┘  │     │ │
+│                                    │  └────────▲───────────┘     │ │
+│                                    │           │                 │ │
+│                                    │  ┌────────┴───────────┐     │ │
+│                                    │  │ ConfigMap          │     │ │
+│                                    │  │ (html/index.html)  │     │ │
+│                                    │  └────────────────────┘     │ │
+│                                    └─────────────────────────────┘ │
+└────────────────────────────────────────────────────────────────────┘
+```
+
+**Flow:**
+1. Build Docker image with nginx + fallback HTML
+2. Load image into Minikube's internal registry
+3. Deploy Helm chart which creates:
+   - ConfigMap with custom HTML files
+   - Deployment with 2 nginx pods (ConfigMap mounted over default HTML)
+   - Service to expose pods internally
+   - Ingress to route external traffic
+4. Access via browser through Ingress (requires minikube tunnel on Docker Desktop)
+
 ## Requirements
 
 - Minikube
