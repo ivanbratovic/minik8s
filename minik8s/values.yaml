@@ -1,5 +1,8 @@
 replicaCount: 2
 
+nameOverride: ""
+fullnameOverride: ""
+
 image:
   repository: nginx
   pullPolicy: IfNotPresent
@@ -10,6 +13,7 @@ service:
   port: 8080
 
 ingress:
+  enabled: true
   host: "minik8s.local"
 
 podSecurityContext: {}

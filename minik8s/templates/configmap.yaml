@@ -1,8 +1,10 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-configmap
+  name: {{ include "minik8s.fullname" . }}-configmap
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "minik8s.labels" . | nindent 4 }}
 data:
 {{ (.Files.Glob "html/*").AsConfig | indent 2 }}
 

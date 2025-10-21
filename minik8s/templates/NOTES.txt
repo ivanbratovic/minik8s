@@ -8,8 +8,9 @@ To access your application:
    kubectl -n {{ .Release.Namespace }} get pods
 
 2. Wait for all pods to be in the "Running" state:
-   kubectl -n {{ .Release.Namespace }} wait --for=condition=Ready pod -l app={{ .Chart.Name }} --timeout=60s
+   kubectl -n {{ .Release.Namespace }} wait --for=condition=Ready pod -l app.kubernetes.io/name={{ include "minik8s.name" . }} --timeout=60s
 
+{{- if .Values.ingress.enabled }}
 {{- if eq .Values.ingress.host "minik8s.local" }}
 
 3. Make sure you have added the following entry to your hosts file:
@@ -19,15 +20,18 @@ To access your application:
 
 {{- end }}
 
-{{- if .Values.ingress.host }}
-
 4. If using Docker Desktop, start the Minikube tunnel in a separate terminal:
    minikube tunnel
 
 5. Access your application:
    - Browser: http://{{ .Values.ingress.host }}/
    - curl: curl http://{{ .Values.ingress.host }}/
+{{- else }}
 
+Ingress is disabled. To access your application, use port-forwarding:
+   kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "minik8s.fullname" . }} 8080:{{ .Values.service.port }}
+
+Then access at: http://localhost:8080/
 {{- end }}
 
 To customize the content served by nginx, edit the files in the html/ directory
