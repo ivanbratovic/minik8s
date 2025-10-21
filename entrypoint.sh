@@ -27,7 +27,7 @@ if [ ! -d "$LOG_DIR" ]; then
 fi
 if [ ! -w "$LOG_DIR" ]; then
     entrypoint_log "$LOG_DIR is not writable. Adding write permissions..."
-    chmod a+w "$LOG_DIR" 2>/dev/null || fail "Cannot modify directory permissions as user '$(whoami)'."
+    chmod u+w "$LOG_DIR" 2>/dev/null || fail "Cannot modify directory permissions as user '$(whoami)'."
 fi
 entrypoint_log "$(ls -ld $LOG_DIR)"
 
